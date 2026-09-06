@@ -20,7 +20,6 @@ def promote_from_waitlist(event_id, db):
     """Promote the next person from waitlist to confirmed"""
     cursor = db.cursor()
 
-    # BUG 3: Missing ORDER BY created_at - promotion is nondeterministic!
     cursor.execute('''
         SELECT user_id
         FROM rsvps
@@ -180,7 +179,6 @@ def rsvp_event(event_id):
     ''', (event_id,))
     confirmed_count = cursor.fetchone()['count']
 
-    # BUG 1: Off-by-one error - should be < not <=
     if confirmed_count <= event['capacity']:
         cursor.execute('''
             INSERT INTO rsvps (user_id, event_id, status)
@@ -216,9 +214,6 @@ def cancel_rsvp(event_id):
         SET status = 'cancelled'
         WHERE user_id = ? AND event_id = ?
     ''', (CURRENT_USER_ID, event_id))
-
-    # BUG 2: Missing waitlist promotion logic
-    # Should check if there's anyone on the waitlist and promote them
 
     db.commit()
     db.close()

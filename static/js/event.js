@@ -37,7 +37,6 @@ function renderEvent(event) {
         minute: '2-digit'
     });
 
-    // BUG 4: Missing waitlisted state handling!
     let buttonHtml = '';
     if (event.current_user_rsvp === 'confirmed') {
         buttonHtml = '<button id="action-btn" class="btn btn-danger">Cancel RSVP</button>';
