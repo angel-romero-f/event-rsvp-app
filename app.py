@@ -1,5 +1,10 @@
 import sqlite3
+import sys
 from flask import Flask, jsonify, request, send_from_directory
+
+if sys.version_info < (3, 7):
+    print("Error: Python 3.7 or higher is required")
+    sys.exit(1)
 
 app = Flask(__name__, static_folder='static')
 
