@@ -24,6 +24,15 @@ def index():
 def event_page():
     return send_from_directory('static', 'event.html')
 
+@app.route('/api/me', methods=['GET'])
+def get_current_user():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT name FROM users WHERE id = ?', (CURRENT_USER_ID,))
+    user = cursor.fetchone()
+    db.close()
+    return jsonify({'name': user['name']})
+
 @app.route('/api/events', methods=['GET'])
 def get_events():
     db = get_db()
@@ -37,12 +46,13 @@ def get_events():
             e.location,
             e.date,
             e.capacity,
-            COALESCE(COUNT(CASE WHEN r.status = 'confirmed' THEN 1 END), 0) as confirmed_count
+            COALESCE(COUNT(CASE WHEN r.status = 'confirmed' THEN 1 END), 0) as confirmed_count,
+            (SELECT status FROM rsvps WHERE event_id = e.id AND user_id = ?) as user_rsvp
         FROM events e
         LEFT JOIN rsvps r ON e.id = r.event_id
         GROUP BY e.id
         ORDER BY e.date
-    ''')
+    ''', (CURRENT_USER_ID,))
 
     events = []
     for row in cursor.fetchall():
@@ -53,7 +63,8 @@ def get_events():
             'location': row['location'],
             'date': row['date'],
             'capacity': row['capacity'],
-            'spots_remaining': row['capacity'] - row['confirmed_count']
+            'spots_remaining': row['capacity'] - row['confirmed_count'],
+            'current_user_rsvp': row['user_rsvp']
         })
 
     db.close()

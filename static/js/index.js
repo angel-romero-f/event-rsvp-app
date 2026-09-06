@@ -31,11 +31,18 @@ async function loadEvents() {
                 badgeClass = 'bg-warning text-dark';
             }
 
+            const rsvpBadge = event.current_user_rsvp === 'confirmed'
+                ? '<span class="badge bg-primary">RSVPd</span>'
+                : '';
+
             return `
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">${event.title}</h5>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title">${event.title}</h5>
+                                ${rsvpBadge}
+                            </div>
                             <p class="card-text text-muted mb-2">
                                 <small>${formattedDate}</small>
                             </p>
@@ -58,4 +65,13 @@ async function loadEvents() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadEvents);
+async function loadCurrentUser() {
+    const response = await fetch('/api/me');
+    const user = await response.json();
+    document.getElementById('user-name').textContent = user.name;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCurrentUser();
+    loadEvents();
+});

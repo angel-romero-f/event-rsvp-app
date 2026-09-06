@@ -117,4 +117,13 @@ async function handleAction() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadEvent);
+async function loadCurrentUser() {
+    const response = await fetch('/api/me');
+    const user = await response.json();
+    document.getElementById('user-name').textContent = user.name;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCurrentUser();
+    loadEvent();
+});
