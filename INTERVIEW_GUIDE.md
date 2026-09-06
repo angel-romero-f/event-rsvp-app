@@ -140,6 +140,8 @@ if (event.current_user_rsvp === 'confirmed') {
 
 ## Setup Instructions
 
+**Requirements:** Python 3.7+ and Flask 2.0+
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/angel-romero-f/event-rsvp-app.git
@@ -148,7 +150,7 @@ cd event-rsvp-app
 
 2. Install dependencies:
 ```bash
-pip install flask
+pip install -r requirements.txt
 ```
 
 3. Seed the database:
@@ -162,6 +164,8 @@ python app.py
 ```
 
 5. Open http://localhost:5000
+
+**Note:** The app uses only standard Flask features and Python's built-in sqlite3. If `python` doesn't work, try `python3`.
 
 ## Tips for Interviewers
 

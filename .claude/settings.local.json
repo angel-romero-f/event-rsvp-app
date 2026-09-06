@@ -6,7 +6,12 @@
       "Bash(python3:*)",
       "Bash(pip3 install:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(pip3 freeze:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(python seed.py:*)",
+      "Bash(deactivate)"
     ]
   }
 }

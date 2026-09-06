@@ -4,9 +4,11 @@ Welcome! This exercise will test your ability to understand an unfamiliar codeba
 
 ## Getting Started
 
-1. Install Flask:
+**Requirements:** Python 3.7+ and Flask 2.0+
+
+1. Install dependencies:
 ```bash
-pip install flask
+pip install -r requirements.txt
 ```
 
 2. Seed the database:
@@ -20,6 +22,8 @@ python app.py
 ```
 
 4. Open http://localhost:5000 in your browser
+
+**Note:** If `python` doesn't work on your system, use `python3` instead.
 
 ## Phase 1: Explore the Application (10-15 minutes)
 

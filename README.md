@@ -2,11 +2,21 @@
 
 A simple event management app where users can browse events and RSVP.
 
+## Requirements
+
+- Python 3.7 or higher
+- Flask 2.0+
+
 ## Setup
 
 1. Install dependencies:
 ```bash
-pip install flask
+pip install -r requirements.txt
+```
+
+Or with pip3:
+```bash
+pip3 install -r requirements.txt
 ```
 
 2. Seed the database:
@@ -20,6 +30,14 @@ python app.py
 ```
 
 4. Open http://localhost:5000 in your browser
+
+## Troubleshooting
+
+If `python` doesn't work, try `python3`:
+```bash
+python3 seed.py
+python3 app.py
+```
 
 ## Features
 
