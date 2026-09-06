@@ -17,7 +17,7 @@ CREATE TABLE rsvps (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     event_id INTEGER NOT NULL,
-    status TEXT NOT NULL DEFAULT 'confirmed',
+    status TEXT NOT NULL DEFAULT 'confirmed',  -- 'confirmed', 'cancelled', or 'waitlisted'
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id),

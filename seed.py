@@ -42,7 +42,7 @@ events = [
         'Deep dive into relational database design, normalization, and indexing strategies.',
         'DevCenter Coworking',
         '2026-10-22T18:30:00',
-        15
+        5
     ),
     (
         'Introduction to Docker',
@@ -97,6 +97,8 @@ print('Database seeded successfully!')
 print('Events created:')
 print('  1. Python Workshop (30 capacity, 4 confirmed)')
 print('  2. React Fundamentals (25 capacity, 5 confirmed)')
-print('  3. Database Design (15 capacity, 5 confirmed - nearly full!)')
+print('  3. Database Design (5 capacity, 5 confirmed - FULL!)')
 print('  4. Docker Workshop (20 capacity, 3 confirmed)')
 print('  5. Git Workshop (40 capacity, 0 confirmed - past event)')
+print('')
+print('Current user (Alice Chen, ID=1) is confirmed for events 2 and 3.')

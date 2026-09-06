@@ -43,7 +43,7 @@ function renderEvent(event) {
     } else if (event.spots_remaining > 0) {
         buttonHtml = '<button id="action-btn" class="btn btn-success">RSVP</button>';
     } else {
-        buttonHtml = '<button class="btn btn-secondary" disabled>Event Full</button>';
+        buttonHtml = '<button id="action-btn" class="btn btn-warning">Join Waitlist</button>';
     }
 
     const attendeesList = event.attendees.length > 0
@@ -65,6 +65,8 @@ function renderEvent(event) {
                              style="width: ${((event.capacity - event.spots_remaining) / event.capacity) * 100}%">
                         </div>
                     </div>
+                    ${event.waitlist_count > 0 ? `<p class="text-muted"><small>${event.waitlist_count} people on the waitlist</small></p>` : ''}
+                    ${event.waitlist_position ? `<p class="text-warning"><strong>You are #${event.waitlist_position} on the waitlist</strong></p>` : ''}
                 </div>
 
                 <div class="mt-4">
@@ -93,8 +95,17 @@ async function handleAction() {
     actionBtn.disabled = true;
     actionBtn.textContent = 'Loading...';
 
+    let endpoint = 'rsvp';
+    if (originalText === 'Cancel RSVP') {
+        endpoint = 'cancel';
+    } else if (originalText === 'Join Waitlist') {
+        endpoint = 'rsvp';
+    } else if (originalText === 'Leave Waitlist') {
+        endpoint = 'leave-waitlist';
+    }
+
     try {
-        const response = await fetch(`/api/events/${eventId}/${originalText === 'RSVP' ? 'rsvp' : 'cancel'}`, {
+        const response = await fetch(`/api/events/${eventId}/${endpoint}`, {
             method: 'POST'
         });
 
