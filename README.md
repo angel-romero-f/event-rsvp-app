@@ -2,32 +2,30 @@
 
 A simple event management app where users can browse events and RSVP.
 
-## Requirements
-
-- Python 3.7 or higher
-
 ## Quick Setup
 
-```bash
-./setup.sh
-```
-
-This will:
-- Create a virtual environment
-- Install dependencies
-- Seed the database
-
-## Running the App
+Requires Python 3.7+.
 
 ```bash
-./run.sh
+./setup.sh    # creates venv, installs dependencies, seeds database
+./run.sh      # starts the server
 ```
 
-Then open http://localhost:5000 in your browser
+Then open http://localhost:5000
 
-## Features
+## Project Structure
 
-- Browse upcoming events
-- View event details and attendee lists
-- RSVP to events (with capacity limits)
-- Cancel RSVPs
+```
+app.py              ← Backend: Flask API routes
+schema.sql          ← Database schema
+seed.py             ← Seeds the database with sample data
+
+static/
+  index.html        ← Event listing page
+  event.html        ← Event detail page
+  js/
+    index.js        ← JS for the listing page
+    event.js        ← JS for the detail page
+  css/
+    styles.css      ← Custom styles
+```

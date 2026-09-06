@@ -13,7 +13,14 @@
       "Bash(python seed.py:*)",
       "Bash(deactivate)",
       "Bash(chmod:*)",
-      "Bash(./setup.sh:*)"
+      "Bash(./setup.sh:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash pop:*)",
+      "Bash(sqlite3:*)",
+      "Bash(git push:*)",
+      "Bash(git stash:*)",
+      "Bash(git merge:*)",
+      "Bash(git rm:*)"
     ]
   }
 }
