@@ -4,26 +4,19 @@ Welcome! This exercise will test your ability to understand an unfamiliar codeba
 
 ## Getting Started
 
-**Requirements:** Python 3.7+ and Flask 2.0+
+**Requirements:** Python 3.7+
 
-1. Install dependencies:
+1. Run the setup script:
 ```bash
-pip install -r requirements.txt
+./setup.sh
 ```
 
-2. Seed the database:
+2. Run the application:
 ```bash
-python seed.py
+./run.sh
 ```
 
-3. Run the application:
-```bash
-python app.py
-```
-
-4. Open http://localhost:5000 in your browser
-
-**Note:** If `python` doesn't work on your system, use `python3` instead.
+3. Open http://localhost:5000 in your browser
 
 ## Phase 1: Explore the Application (10-15 minutes)
 
@@ -82,6 +75,7 @@ Your task is to review the implementation and identify any issues.
 To test the waitlist branch:
 ```bash
 git checkout feature/waitlist
+source venv/bin/activate
 python seed.py  # Reset database with new seed data
 python app.py
 ```

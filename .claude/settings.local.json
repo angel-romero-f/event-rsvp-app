@@ -11,7 +11,9 @@
       "Bash(source:*)",
       "Bash(pip install:*)",
       "Bash(python seed.py:*)",
-      "Bash(deactivate)"
+      "Bash(deactivate)",
+      "Bash(chmod:*)",
+      "Bash(./setup.sh:*)"
     ]
   }
 }
