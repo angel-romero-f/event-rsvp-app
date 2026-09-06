@@ -11,6 +11,27 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+def promote_from_waitlist(event_id, db):
+    """Promote the next person from waitlist to confirmed"""
+    cursor = db.cursor()
+
+    # BUG 3: Missing ORDER BY created_at - promotion is nondeterministic!
+    cursor.execute('''
+        SELECT user_id
+        FROM rsvps
+        WHERE event_id = ? AND status = 'waitlisted'
+        LIMIT 1
+    ''', (event_id,))
+
+    next_person = cursor.fetchone()
+    if next_person:
+        cursor.execute('''
+            UPDATE rsvps
+            SET status = 'confirmed'
+            WHERE user_id = ? AND event_id = ?
+        ''', (next_person['user_id'], event_id))
+        db.commit()
+
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
@@ -83,12 +104,30 @@ def get_event(event_id):
     attendees = [{'name': row['name'], 'email': row['email']} for row in cursor.fetchall()]
 
     cursor.execute('''
+        SELECT COUNT(*) as count
+        FROM rsvps
+        WHERE event_id = ? AND status = 'waitlisted'
+    ''', (event_id,))
+    waitlist_count = cursor.fetchone()['count']
+
+    cursor.execute('''
         SELECT status
         FROM rsvps
         WHERE event_id = ? AND user_id = ?
     ''', (event_id, CURRENT_USER_ID))
     user_rsvp = cursor.fetchone()
     current_user_rsvp = user_rsvp['status'] if user_rsvp else None
+
+    waitlist_position = None
+    if current_user_rsvp == 'waitlisted':
+        cursor.execute('''
+            SELECT COUNT(*) + 1 as position
+            FROM rsvps
+            WHERE event_id = ? AND status = 'waitlisted' AND created_at < (
+                SELECT created_at FROM rsvps WHERE event_id = ? AND user_id = ?
+            )
+        ''', (event_id, event_id, CURRENT_USER_ID))
+        waitlist_position = cursor.fetchone()['position']
 
     db.close()
 
@@ -101,7 +140,9 @@ def get_event(event_id):
         'capacity': event['capacity'],
         'spots_remaining': event['capacity'] - confirmed_count,
         'attendees': attendees,
-        'current_user_rsvp': current_user_rsvp
+        'current_user_rsvp': current_user_rsvp,
+        'waitlist_count': waitlist_count,
+        'waitlist_position': waitlist_position
     })
 
 @app.route('/api/events/<int:event_id>/rsvp', methods=['POST'])
@@ -123,16 +164,21 @@ def rsvp_event(event_id):
     ''', (event_id,))
     confirmed_count = cursor.fetchone()['count']
 
-    if confirmed_count >= event['capacity']:
-        db.close()
-        return jsonify({'error': 'Event is full'}), 400
-
-    cursor.execute('''
-        INSERT INTO rsvps (user_id, event_id, status)
-        VALUES (?, ?, 'confirmed')
-        ON CONFLICT(user_id, event_id)
-        DO UPDATE SET status = 'confirmed'
-    ''', (CURRENT_USER_ID, event_id))
+    # BUG 1: Off-by-one error - should be < not <=
+    if confirmed_count <= event['capacity']:
+        cursor.execute('''
+            INSERT INTO rsvps (user_id, event_id, status)
+            VALUES (?, ?, 'confirmed')
+            ON CONFLICT(user_id, event_id)
+            DO UPDATE SET status = 'confirmed'
+        ''', (CURRENT_USER_ID, event_id))
+    else:
+        cursor.execute('''
+            INSERT INTO rsvps (user_id, event_id, status)
+            VALUES (?, ?, 'waitlisted')
+            ON CONFLICT(user_id, event_id)
+            DO UPDATE SET status = 'waitlisted'
+        ''', (CURRENT_USER_ID, event_id))
 
     db.commit()
     db.close()
@@ -153,6 +199,30 @@ def cancel_rsvp(event_id):
         UPDATE rsvps
         SET status = 'cancelled'
         WHERE user_id = ? AND event_id = ?
+    ''', (CURRENT_USER_ID, event_id))
+
+    # BUG 2: Missing waitlist promotion logic
+    # Should check if there's anyone on the waitlist and promote them
+
+    db.commit()
+    db.close()
+
+    return get_event(event_id)
+
+@app.route('/api/events/<int:event_id>/leave-waitlist', methods=['POST'])
+def leave_waitlist(event_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute('SELECT id FROM events WHERE id = ?', (event_id,))
+    if not cursor.fetchone():
+        db.close()
+        return jsonify({'error': 'Event not found'}), 404
+
+    cursor.execute('''
+        UPDATE rsvps
+        SET status = 'cancelled'
+        WHERE user_id = ? AND event_id = ? AND status = 'waitlisted'
     ''', (CURRENT_USER_ID, event_id))
 
     db.commit()
